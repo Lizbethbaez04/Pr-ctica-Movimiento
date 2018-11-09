@@ -25,6 +25,10 @@ namespace PracticaMovimiento
     {
         Stopwatch stopwatch;
         TimeSpan tiempoAnterior;
+
+        //enum es un tipo de dato para definir opciones
+        enum EstadoJuego { Gameplay, Gameover};
+        EstadoJuego estadoActual = EstadoJuego.Gameplay;
         public MainWindow()
         {
             InitializeComponent();
@@ -35,28 +39,71 @@ namespace PracticaMovimiento
             tiempoAnterior = stopwatch.Elapsed;
 
             //1. Establecer instrucciones
-            ThreadStart threadStart = new ThreadStart(moverEnemigos);
+            ThreadStart threadStart = new ThreadStart(actualizar);
             //2. Inicializar el Thread
             Thread threadMoverEnemigos = new Thread(threadStart);
             //3. Ejecutar el Thread
             threadMoverEnemigos.Start();
         }
 
-        void moverEnemigos()
+        void actualizar()
         {
             while (true)
             {
-                Dispatcher.Invoke(()=> 
+                Dispatcher.Invoke(() =>
                 {
                     var tiempoActual = stopwatch.Elapsed;
                     var deltaTime = tiempoActual - tiempoAnterior;
 
-                    double leftCarroActual = Canvas.GetLeft(imgCarro);
-                    Canvas.SetLeft(imgCarro, leftCarroActual - (110 * deltaTime.TotalSeconds));
-                    if(Canvas.GetLeft(imgCarro) <= -100)
+                    if(estadoActual == EstadoJuego.Gameplay)
                     {
-                        Canvas.SetLeft(imgCarro, 800);
+                        double leftCarroActual = Canvas.GetLeft(imgCarro);
+                        Canvas.SetLeft(imgCarro, leftCarroActual - (200 * deltaTime.TotalSeconds));
+                        if (Canvas.GetLeft(imgCarro) <= -100)
+                        {
+                            Canvas.SetLeft(imgCarro, 800);
+                        }
+
+                        //Intersección en X
+                        double xCarro = Canvas.GetLeft(imgCarro);
+                        double xPanda = Canvas.GetLeft(imgPanda);
+                        if (xPanda + imgPanda.Width >= xCarro && xPanda <= xCarro + imgCarro.Width)
+                        {
+                            lblInterseccionX.Text = "SI HAY INTERSECCION EN X!";
+                        }
+                        else
+                        {
+                            lblInterseccionX.Text = "No hay intersección en X";
+                        }
+
+                        //Interseccion en Y
+                        double yCarro = Canvas.GetTop(imgCarro);
+                        double yPanda = Canvas.GetTop(imgPanda);
+                        if (yPanda + imgPanda.Height >= yCarro && yPanda <= yCarro + imgCarro.Height)
+                        {
+                            lblInterseccionY.Text = "SI HAY INTERSECCION EN Y!";
+                        }
+                        else
+                        {
+                            lblInterseccionY.Text = "No hay intersección en Y";
+                        }
+                        if (xPanda + imgPanda.Width >= xCarro && xPanda <= xCarro + imgCarro.Width && yPanda + imgPanda.Height >= yCarro && yPanda <= yCarro + imgCarro.Height)
+                        {
+                            lblColision.Text = "HAY COLISION!";
+                            estadoActual = EstadoJuego.Gameover;
+                            miCanvas.Visibility = Visibility.Collapsed;
+                            canvasGameOver.Visibility = Visibility.Visible;
+                        }
+                        else
+                        {
+                            lblColision.Text = "No hay colision";                           
+                        }
                     }
+                    else if(estadoActual == EstadoJuego.Gameover)
+                    {
+
+                    }
+                    
                     tiempoAnterior = tiempoActual;
                 });
             }
@@ -64,16 +111,31 @@ namespace PracticaMovimiento
 
         private void miCanvas_KeyDown(object sender, KeyEventArgs e)
         {
-            if(e.Key == Key.Up)
+            if(estadoActual == EstadoJuego.Gameplay)
             {
-                //asi es como se mueve la imagen si aprieta el boton "arriba"
-                double topPandaActual = Canvas.GetTop(imgPanda);
-                double leftPandaActual = Canvas.GetLeft(imgPanda);
-                double rightPandaActual = Canvas.GetRight(imgPanda);
-                Canvas.SetTop(imgPanda, topPandaActual - 15);
-                Canvas.SetLeft(imgPanda, leftPandaActual - 15);
-                Canvas.SetRight(imgPanda, rightPandaActual - 15);                
+                if (e.Key == Key.Up)
+                {
+                    //asi es como se mueve la imagen si aprieta el boton "arriba"
+                    double topPandaActual = Canvas.GetTop(imgPanda);
+                    Canvas.SetTop(imgPanda, topPandaActual - 15);
+                }
+                if (e.Key == Key.Left)
+                {
+                    double leftPandaActual = Canvas.GetLeft(imgPanda);
+                    Canvas.SetLeft(imgPanda, leftPandaActual - 15);
+                }
+                if (e.Key == Key.Right)
+                {
+                    double leftPandaActual = Canvas.GetLeft(imgPanda);
+                    Canvas.SetLeft(imgPanda, leftPandaActual + 15);
+                }
+                if (e.Key == Key.Down)
+                {
+                    double topPandaActual = Canvas.GetTop(imgPanda);
+                    Canvas.SetTop(imgPanda, topPandaActual + 15);
+                }
             }
+            
         }
     }
 }

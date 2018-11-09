@@ -6,8 +6,16 @@
         xmlns:local="clr-namespace:PracticaMovimiento"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Canvas Name="miCanvas" KeyDown="miCanvas_KeyDown" Focusable="True">
-        <Image Name="imgPanda" Source=" 1.png" Height="100" Width="100" Stretch="UniformToFill" Canvas.Left="10" Canvas.Top="270"></Image>
-        <Image Name="imgCarro" Source="2.png" Height="100" Width="100" Stretch="Uniform" Canvas.Left="682" Canvas.Top="109"></Image> 
+    <Canvas>
+        <Canvas Visibility="Visible" Name="miCanvas" KeyDown="miCanvas_KeyDown" Focusable="True">
+            <Image Name="imgPanda" Source=" 1.png" Height="100" Width="100" Stretch="UniformToFill" Canvas.Left="10" Canvas.Top="270"></Image>
+            <Image Name="imgCarro" Source="2.png" Height="100" Width="100" Stretch="Uniform" Canvas.Left="682" Canvas.Top="109"></Image>
+            <TextBlock x:Name="lblInterseccionX" Canvas.Left="10" TextWrapping="Wrap" Text="No hay intersección en X" Canvas.Top="10"/>
+            <TextBlock x:Name="lblInterseccionY" Canvas.Left="10" TextWrapping="Wrap" Text="No hay intersección en Y" Canvas.Top="31"/>
+            <TextBlock x:Name="lblColision" Canvas.Left="10" TextWrapping="Wrap" Text="No hay colisión" Canvas.Top="52"/>
+        </Canvas>
+        <Canvas Name="canvasGameOver" Visibility="Collapsed">
+            <TextBlock Canvas.Left="226" Canvas.Top="143" Height="119" Width="365" FontSize="72" Foreground="#FFBD3B3B">Game Over</TextBlock>
+        </Canvas>
     </Canvas>
 </Window>

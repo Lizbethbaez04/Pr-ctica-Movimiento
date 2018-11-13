@@ -29,6 +29,11 @@ namespace PracticaMovimiento
         //enum es un tipo de dato para definir opciones
         enum EstadoJuego { Gameplay, Gameover};
         EstadoJuego estadoActual = EstadoJuego.Gameplay;
+
+        enum Direccion { Arriba, Abajo, Izquierda, Derecha, Ninguna};
+        Direccion direccionJugador = Direccion.Ninguna;
+         double velocidadPanda = 80;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -46,6 +51,36 @@ namespace PracticaMovimiento
             threadMoverEnemigos.Start();
         }
 
+        void moverJugador(TimeSpan deltaTime)
+        {
+            double topPandaActual = Canvas.GetTop(imgPanda);
+            double leftPandaActual = Canvas.GetLeft(imgPanda);
+            switch (direccionJugador)
+            {
+                case Direccion.Arriba:                    
+                    Canvas.SetTop(imgPanda, topPandaActual - (velocidadPanda * deltaTime.TotalSeconds));
+                    break;
+                case Direccion.Abajo:
+                    Canvas.SetTop(imgPanda, topPandaActual + (velocidadPanda * deltaTime.TotalSeconds));
+                    break;
+                case Direccion.Izquierda:  
+                    if(leftPandaActual - (velocidadPanda * deltaTime.TotalSeconds) >= 0)
+                    {
+                        Canvas.SetLeft(imgPanda, leftPandaActual - (velocidadPanda * deltaTime.TotalSeconds));
+                    }                    
+                    break;
+                case Direccion.Derecha:
+                    double nuevaPosicion = leftPandaActual + (velocidadPanda * deltaTime.TotalSeconds);
+                    if (nuevaPosicion + imgPanda.Width <= 795)
+                    {
+                        Canvas.SetLeft(imgPanda, nuevaPosicion);
+                    }                                       
+                    break;
+                case Direccion.Ninguna:
+                    break;
+            }
+        }
+
         void actualizar()
         {
             while (true)
@@ -55,8 +90,11 @@ namespace PracticaMovimiento
                     var tiempoActual = stopwatch.Elapsed;
                     var deltaTime = tiempoActual - tiempoAnterior;
 
+                    //velocidadPanda += 10 * deltaTime.TotalSeconds;
+
                     if(estadoActual == EstadoJuego.Gameplay)
                     {
+                        moverJugador(deltaTime);
                         double leftCarroActual = Canvas.GetLeft(imgCarro);
                         Canvas.SetLeft(imgCarro, leftCarroActual - (200 * deltaTime.TotalSeconds));
                         if (Canvas.GetLeft(imgCarro) <= -100)
@@ -115,27 +153,42 @@ namespace PracticaMovimiento
             {
                 if (e.Key == Key.Up)
                 {
-                    //asi es como se mueve la imagen si aprieta el boton "arriba"
-                    double topPandaActual = Canvas.GetTop(imgPanda);
-                    Canvas.SetTop(imgPanda, topPandaActual - 15);
+                    direccionJugador = Direccion.Arriba;
                 }
                 if (e.Key == Key.Left)
                 {
-                    double leftPandaActual = Canvas.GetLeft(imgPanda);
-                    Canvas.SetLeft(imgPanda, leftPandaActual - 15);
+                    direccionJugador = Direccion.Izquierda;
                 }
                 if (e.Key == Key.Right)
                 {
-                    double leftPandaActual = Canvas.GetLeft(imgPanda);
-                    Canvas.SetLeft(imgPanda, leftPandaActual + 15);
+                    direccionJugador = Direccion.Derecha;
                 }
                 if (e.Key == Key.Down)
                 {
-                    double topPandaActual = Canvas.GetTop(imgPanda);
-                    Canvas.SetTop(imgPanda, topPandaActual + 15);
+                    direccionJugador = Direccion.Abajo;
                 }
             }
             
+        }
+
+        private void miCanvas_KeyUp(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Up && direccionJugador == Direccion.Arriba)
+            {
+                direccionJugador = Direccion.Ninguna;
+            }
+            if(e.Key == Key.Left && direccionJugador == Direccion.Izquierda)
+            {
+                direccionJugador = Direccion.Ninguna;
+            }
+            if (e.Key == Key.Down && direccionJugador == Direccion.Abajo)
+            {
+                direccionJugador = Direccion.Ninguna;
+            }
+            if (e.Key == Key.Right && direccionJugador == Direccion.Derecha)
+            {
+                direccionJugador = Direccion.Ninguna;
+            }
         }
     }
 }

@@ -34,6 +34,9 @@ namespace PracticaMovimiento
         Direccion direccionJugador = Direccion.Ninguna;
          double velocidadPanda = 80;
 
+        
+       
+
         public MainWindow()
         {
             InitializeComponent();
@@ -89,10 +92,13 @@ namespace PracticaMovimiento
                 {
                     var tiempoActual = stopwatch.Elapsed;
                     var deltaTime = tiempoActual - tiempoAnterior;
-
+                    Image milmagen = new Image();
+                    milmagen.Source = new BitmapImage(new Uri("panda.png", UriKind.Relative));
+                    BitmapImage bmpCarroArriba = new BitmapImage();
+                    imgCarro.Source = bmpCarroArriba;
                     //velocidadPanda += 10 * deltaTime.TotalSeconds;
 
-                    if(estadoActual == EstadoJuego.Gameplay)
+                    if (estadoActual == EstadoJuego.Gameplay)
                     {
                         moverJugador(deltaTime);
                         double leftCarroActual = Canvas.GetLeft(imgCarro);
